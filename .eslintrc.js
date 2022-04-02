@@ -41,6 +41,12 @@ module.exports = {
         namedComponents: 'arrow-function',
       },
     ],
+    '@typescript-eslint/no-empty-interface': [
+      'error',
+      {
+        allowSingleExtends: true,
+      },
+    ],
   },
   settings: {
     'import/resolver': {
@@ -48,5 +54,9 @@ module.exports = {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
     },
+  },
+  env: {
+    browser: true,
+    node: true,
   },
 };
