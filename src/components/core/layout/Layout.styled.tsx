@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const CenteredContainer = styled.section`
   width: 100%;
-  
+
   @media all and (min-width: ${({ theme }) => theme.breakpoints.md}) {
     height: 100vh;
     display: flex;
@@ -19,6 +19,6 @@ export const Card = styled.div`
 
   @media all and (min-width: ${({ theme }) => theme.breakpoints.md}) {
     padding: 80px 68px;
-    box-shadow: 0px 0px 24px -10px rgba(66, 68, 90, 1);
+    box-shadow: 0 0 24px -10px rgba(66, 68, 90, 1);
   }
 `;
