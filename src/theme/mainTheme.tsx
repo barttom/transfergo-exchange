@@ -15,6 +15,9 @@ export const mainTheme = {
   fontWeight: {
     regular: '400',
     bold: '700',
+  },
+  breakpoints: {
+    md: '768px',
   }
 };
 
