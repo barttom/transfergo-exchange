@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import debounce from 'lodash.debounce';
 import { DropdownField } from '../../core/form';
 import { currencyOptions } from '../../../constants/currencyOptions';
 import { Button } from '../../button';
 import { ExchangeIco, FieldCell, FieldsRow } from './Exchange.styled';
 import { CurrencyField } from '../../core/form/currencyInput/CurrencyField';
 import { usePrevious } from '../../../hooks/usePrevious';
-import { ExchangeResponse, requestExchange } from '../../../utils/api';
+import { ExchangeRequestParams, ExchangeResponse, requestExchange } from '../../../utils/api';
 
 export type ExchangeFormValues = {
   exchangeFrom: string;
@@ -30,22 +31,92 @@ export const ExchangeForm = ({ onReceiveData }: ExchangeFormProps) => {
   });
   const { handleSubmit, formState, watch, setValue } = formMethods;
   const currentValues = watch();
-  const prevValues = usePrevious(currentValues as never);
+  const prevValues = usePrevious(currentValues);
+  const [shouldRefetch, setShouldRefetch] = useState(false);
 
+  const flagUserChange = () => {
+    setShouldRefetch(true);
+  };
   const submitForm = async ({ exchangeTo, exchangeFrom, amountFrom }: ExchangeFormValues) => {
-    const data = await requestExchange({
-      from: exchangeFrom as string,
-      to: exchangeTo as string,
-      amount: amountFrom.toString(),
-    });
+    try {
+      const data = await requestExchange({
+        from: exchangeFrom as string,
+        to: exchangeTo as string,
+        amount: amountFrom.toString(),
+      });
+      setShouldRefetch(false);
 
-    if (data) {
-      setValue('amountTo', Number(data.toAmount));
-      onReceiveData(data);
+      if (data) {
+        if (!Number.isNaN(Number(data.toAmount))) {
+          setValue('amountTo', Number(data.toAmount));
+        }
+        onReceiveData(data);
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
+  const onChangeValues = useCallback(
+    debounce(
+      ({ from, to, amount }: ExchangeRequestParams, callback: (data: ExchangeResponse) => void) => {
+        handleSubmit(async () => {
+          try {
+            const data = await requestExchange({
+              from,
+              to,
+              amount,
+            });
+            setShouldRefetch(false);
 
-  console.log(prevValues);
+            if (data) {
+              callback(data);
+            }
+          } catch (e) {
+            console.log(e);
+          }
+        })();
+      },
+      1000,
+    ),
+    [],
+  );
+
+  useEffect(() => {
+    if (
+      shouldRefetch &&
+      currentValues.amountTo &&
+      JSON.stringify(currentValues) !== JSON.stringify(prevValues)
+    ) {
+      if (currentValues.amountTo !== prevValues?.amountTo) {
+        onChangeValues(
+          {
+            from: currentValues.exchangeTo,
+            to: currentValues.exchangeFrom,
+            amount: currentValues.amountTo.toString(),
+          },
+          (data) => {
+            if (!Number.isNaN(Number(data.toAmount))) {
+              setValue('amountFrom', Number(data.toAmount));
+            }
+          },
+        );
+      } else {
+        onChangeValues(
+          {
+            from: currentValues.exchangeFrom,
+            to: currentValues.exchangeTo,
+            amount: currentValues.amountFrom.toString(),
+          },
+          (data) => {
+            onReceiveData(data);
+            if (!Number.isNaN(Number(data.toAmount))) {
+              setValue('amountTo', Number(data.toAmount));
+            }
+          },
+        );
+      }
+    }
+  }, [currentValues]);
 
   return (
     <FormProvider {...formMethods}>
@@ -57,6 +128,7 @@ export const ExchangeForm = ({ onReceiveData }: ExchangeFormProps) => {
               label="from"
               options={currencyOptions.filter(({ value }) => value !== currentValues.exchangeTo)}
               isDisabled={formState.isSubmitting}
+              onChangeCallback={flagUserChange}
             />
           </FieldCell>
           <ExchangeIco>
@@ -68,6 +140,7 @@ export const ExchangeForm = ({ onReceiveData }: ExchangeFormProps) => {
               label="to"
               options={currencyOptions.filter(({ value }) => value !== currentValues.exchangeFrom)}
               isDisabled={formState.isSubmitting}
+              onChangeCallback={flagUserChange}
             />
           </FieldCell>
         </FieldsRow>
@@ -76,6 +149,7 @@ export const ExchangeForm = ({ onReceiveData }: ExchangeFormProps) => {
             <CurrencyField
               name="amountFrom"
               label="amount"
+              onKeyDown={flagUserChange}
               currency={currentValues.exchangeFrom}
               disabled={formState.isSubmitting}
             />
@@ -84,7 +158,8 @@ export const ExchangeForm = ({ onReceiveData }: ExchangeFormProps) => {
             <FieldCell gap={60}>
               <CurrencyField
                 name="amountTo"
-                label="amount"
+                label="converted to"
+                onKeyDown={flagUserChange}
                 currency={currentValues.exchangeTo}
                 disabled={formState.isSubmitting}
               />
