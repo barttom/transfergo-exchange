@@ -47,6 +47,8 @@ module.exports = {
         allowSingleExtends: true,
       },
     ],
+    'react/jsx-props-no-spreading': 'off',
+    'react/require-default-props': ['error', { ignoreFunctionalComponents: true }],
   },
   settings: {
     'import/resolver': {
