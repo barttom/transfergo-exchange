@@ -8,7 +8,6 @@ export const GlobalStyles = createGlobalStyle`
     font-family: Roboto, sans-serif;
     line-height: 1.333;
     font-weight: ${({ theme }) => theme.fontWeight.regular};
-    background: ${({theme}) => theme.colors.silver};
+    background: ${({ theme }) => theme.colors.gallery};
   }
 `;
-
