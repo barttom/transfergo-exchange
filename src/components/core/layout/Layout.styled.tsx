@@ -13,7 +13,7 @@ export const CenteredContainer = styled.section`
 
 export const Card = styled.div`
   width: 100%;
-  max-width: 880px;
+  max-width: 860px;
   padding: 30px 16px;
   background: ${({ theme }) => theme.colors.white};
 

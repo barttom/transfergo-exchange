@@ -6,7 +6,7 @@ import { Button } from '../../button';
 import { ExchangeIco, FieldCell, FieldsRow } from './Exchange.styled';
 import { CurrencyField } from '../../core/form/currencyInput/CurrencyField';
 import { usePrevious } from '../../../hooks/usePrevious';
-import { requestExchange } from '../../../utils/api';
+import { ExchangeResponse, requestExchange } from '../../../utils/api';
 
 export type ExchangeFormValues = {
   exchangeFrom: string;
@@ -15,7 +15,11 @@ export type ExchangeFormValues = {
   amountTo?: number;
 };
 
-export const ExchangeForm = () => {
+export type ExchangeFormProps = {
+  onReceiveData: (values: ExchangeResponse) => void;
+};
+
+export const ExchangeForm = ({ onReceiveData }: ExchangeFormProps) => {
   const formMethods = useForm<ExchangeFormValues>({
     defaultValues: {
       exchangeFrom: 'EUR',
@@ -37,6 +41,7 @@ export const ExchangeForm = () => {
 
     if (data) {
       setValue('amountTo', Number(data.toAmount));
+      onReceiveData(data);
     }
   };
 
