@@ -1,8 +1,13 @@
 import React from 'react';
 import InputNumber, { InputNumberProps } from 'rc-input-number';
-import { CurrencyInputWrapper, CurrencyLabel } from './CurrencyInput.styled';
-import { FieldProps } from '../form.d';
-import { ErrorMessage, FieldLabel, FieldWrapper } from '../Form.styled';
+import {
+  FieldProps,
+  CurrencyInputWrapper,
+  CurrencyLabel,
+  ErrorMessage,
+  FieldLabel,
+  FieldWrapper,
+} from '../index';
 
 export type CurrencyInputProps = InputNumberProps & FieldProps & { currency: string };
 

@@ -1,8 +1,7 @@
 import React from 'react';
-import { Card, CenteredContainer } from './components/core/layout/Layout.styled';
-import { CurrencyInput } from './components/core/form/currencyInput/CurrencyInput';
-import { Dropdown } from './components/core/form/dropdown/Dropdown';
-import { Button } from './components/button/Button';
+import { Card, CenteredContainer } from './components/core/layout';
+import { CurrencyInput, Dropdown } from './components/core/form';
+import { Button } from './components/button';
 
 export const App = () => (
   <CenteredContainer>
