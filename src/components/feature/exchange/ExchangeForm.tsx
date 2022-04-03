@@ -24,16 +24,20 @@ export const ExchangeForm = () => {
       amountTo: undefined,
     },
   });
-  const { handleSubmit, formState, watch } = formMethods;
+  const { handleSubmit, formState, watch, setValue } = formMethods;
   const currentValues = watch();
   const prevValues = usePrevious(currentValues as never);
 
   const submitForm = async ({ exchangeTo, exchangeFrom, amountFrom }: ExchangeFormValues) => {
-    return requestExchange({
+    const data = await requestExchange({
       from: exchangeFrom as string,
       to: exchangeTo as string,
       amount: amountFrom.toString(),
     });
+
+    if (data) {
+      setValue('amountTo', Number(data.toAmount));
+    }
   };
 
   console.log(prevValues);
@@ -47,27 +51,46 @@ export const ExchangeForm = () => {
               name="exchangeFrom"
               label="from"
               options={currencyOptions.filter(({ value }) => value !== currentValues.exchangeTo)}
+              isDisabled={formState.isSubmitting}
             />
           </FieldCell>
           <ExchangeIco>
-            <i className="twa twa-1f4b1" />
+            <i className={`twa twa-${formState.isSubmitting ? '23f3' : '1f4b1'}`} />
           </ExchangeIco>
           <FieldCell gap={60}>
             <DropdownField
               name="exchangeTo"
               label="to"
               options={currencyOptions.filter(({ value }) => value !== currentValues.exchangeFrom)}
+              isDisabled={formState.isSubmitting}
             />
           </FieldCell>
         </FieldsRow>
         <FieldsRow>
-          <FieldCell>
-            <CurrencyField name="amountFrom" label="amount" currency={currentValues.exchangeFrom} />
+          <FieldCell gap={currentValues.amountTo ? 60 : undefined}>
+            <CurrencyField
+              name="amountFrom"
+              label="amount"
+              currency={currentValues.exchangeFrom}
+              disabled={formState.isSubmitting}
+            />
           </FieldCell>
+          {currentValues.amountTo && (
+            <FieldCell gap={60}>
+              <CurrencyField
+                name="amountTo"
+                label="amount"
+                currency={currentValues.exchangeTo}
+                disabled={formState.isSubmitting}
+              />
+            </FieldCell>
+          )}
         </FieldsRow>
-        <Button type="submit" disabled={formState.isSubmitting} fullWidth>
-          Convert
-        </Button>
+        {!currentValues.amountTo && (
+          <Button type="submit" disabled={formState.isSubmitting} fullWidth>
+            Convert
+          </Button>
+        )}
       </form>
     </FormProvider>
   );
