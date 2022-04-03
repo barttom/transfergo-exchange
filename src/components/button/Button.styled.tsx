@@ -29,6 +29,13 @@ export const ButtonStyled = styled.button<Pick<ButtonProps, 'variant' | 'fullWid
   border-radius: 0;
   outline: none !important;
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
+  opacity: 1;
+  transition: 0.3s opacity ease;
+
+  &:hover {
+    opacity: 0.8;
+    cursor: pointer;
+  }
 
   ${({ theme, variant }) => getVariants(variant, theme)}
 `;
