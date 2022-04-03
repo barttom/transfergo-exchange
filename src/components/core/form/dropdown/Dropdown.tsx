@@ -1,9 +1,26 @@
 import React, { useMemo } from 'react';
-import Select, { Props, StylesConfig } from 'react-select';
+import Select, {
+  OptionProps,
+  Props,
+  StylesConfig,
+  components,
+  SingleValueProps,
+} from 'react-select';
 import { useTheme } from 'styled-components';
 import { FieldProps, ErrorMessage, FieldLabel, FieldWrapper } from '../index';
 
 export type DropdownProps = Props & FieldProps;
+
+const CustomOption = ({ children, ...rest }: OptionProps) => (
+  <components.Option {...rest}>
+    <i className={`twa twa-${(rest.data as { icoCode: string }).icoCode}`} /> {children}
+  </components.Option>
+);
+const CustomSingleValue = ({ children, ...rest }: SingleValueProps) => (
+  <components.SingleValue {...rest}>
+    <i className={`twa twa-${(rest.data as { icoCode: string }).icoCode}`} /> {children}
+  </components.SingleValue>
+);
 
 export const Dropdown = ({ label, error, name, ...restProps }: DropdownProps) => {
   const { colors, fontSize } = useTheme();
@@ -49,7 +66,15 @@ export const Dropdown = ({ label, error, name, ...restProps }: DropdownProps) =>
   return (
     <FieldWrapper>
       <FieldLabel htmlFor={name}>{label}</FieldLabel>
-      <Select name={name} styles={selectStyles} {...restProps} />
+      <Select
+        name={name}
+        styles={selectStyles}
+        components={{
+          Option: CustomOption,
+          SingleValue: CustomSingleValue,
+        }}
+        {...restProps}
+      />
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </FieldWrapper>
   );
