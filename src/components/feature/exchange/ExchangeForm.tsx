@@ -3,7 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import debounce from 'lodash.debounce';
 import { DropdownField } from '../../core/form';
 import { currencyOptions } from '../../../constants/currencyOptions';
-import { Button } from '../../button';
+import { Button } from '../../core/button';
 import { ExchangeIco, FieldCell, FieldsRow } from './Exchange.styled';
 import { CurrencyField } from '../../core/form/currencyInput/CurrencyField';
 import { usePrevious } from '../../../hooks/usePrevious';
@@ -40,8 +40,8 @@ export const ExchangeForm = ({ onReceiveData }: ExchangeFormProps) => {
   const submitForm = async ({ exchangeTo, exchangeFrom, amountFrom }: ExchangeFormValues) => {
     try {
       const data = await requestExchange({
-        from: exchangeFrom as string,
-        to: exchangeTo as string,
+        from: exchangeFrom,
+        to: exchangeTo,
         amount: amountFrom.toString(),
       });
       setShouldRefetch(false);

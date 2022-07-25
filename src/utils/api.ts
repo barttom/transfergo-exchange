@@ -23,7 +23,7 @@ export const requestExchange = async ({
       amount,
     });
 
-    return await fetch(`https://my.transfergo.com/api/fx-rates/?${params}`)
+    return await fetch(`https://my.transfergo.com/api/fx-rates?${params}`)
       .then((res) => res.json())
       .catch(() => {
         return null;
