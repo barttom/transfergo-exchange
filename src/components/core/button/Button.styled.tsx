@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { ButtonProps } from './Button';
-import { MainTheme } from '../../theme/mainTheme';
+import { MainTheme } from '../../../theme/mainTheme';
 
 const getVariants = (variant: ButtonProps['variant'], theme: MainTheme) => {
   switch (variant) {
